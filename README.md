@@ -26,7 +26,65 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions
+### Configuration
+
+Create `config/initializers/wx_customs.rb` and pass configuration options as a block to `WxCustoms::Client`.
+
+```ruby
+$client = WxCustoms::Client.new do |config|
+  config.appid = "YOUR_APPID"
+  config.mch_id = "YOUR_MCH_ID"
+  config.api_key = "YOUR_API_KEY"
+  # If you have multiple `customs` and `mch_customs_no`, you can set them later in API calls
+  config.customs = "YOUR_CUSTOMS"
+  config.mch_customs_no = "YOUR_MCH_CUSTOMS_NO"
+end
+```
+
+### Custom Declare Order API
+
+See [订单附加信息提交接口](https://pay.weixin.qq.com/wiki/doc/api/external/declarecustom.php?chapter=18_1)
+
+```ruby
+params = {
+  order_fee: 13110,
+  out_trade_no: "15112496832609",
+  product_fee: 13110,
+  transaction_id: "1006930610201511241751403478",
+  transport_fee: 0,
+  fee_type: "CNY",
+  sub_order_no: "15112496832609001"
+}
+
+response = $client.custom_declare_order params
+
+# You can also config another `customs` and `mch_customs_no` in an API call
+$client.custom_declare_order { customs: "ANOTHER_CUSTOMS", mch_customs_no: "ANOTHER_MCH_CUSTOMS_NO" }.merge(params)
+```
+
+### Custom Declare Query API
+
+See [订单附加信息查询接口](https://pay.weixin.qq.com/wiki/doc/api/external/declarecustom.php?chapter=18_2)
+
+```ruby
+params = {
+  transaction_id: "1006930610201511241751403478"
+}
+
+response = $client.custom_declare_query params
+```
+
+### Custom Declare Redeclare API
+
+See [订单附加信息重推接口](https://pay.weixin.qq.com/wiki/doc/api/external/declarecustom.php?chapter=18_4&index=3)
+
+```ruby
+params = {
+  out_trade_no: "15112496832609"
+}
+
+response = $client.custom_declare_redeclare params
+```
 
 ## Development
 

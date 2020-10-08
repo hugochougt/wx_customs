@@ -21,10 +21,10 @@ module WxCustoms
     end
 
     def test_generate_valid_md5_sign
-      assert_equal @sign, WxCustoms::Sign.generate(@params, @key, WxCustoms::Sign::SIGN_ALGO_MD5)
+      assert_equal @sign, WxCustoms::Sign.generate(@params, @key, WxCustoms::Sign::SIGN_TYPE_MD5)
     end
 
-    def test_raise_argument_error_when_passing_in_non_supported_sign_algorithm
+    def test_raise_argument_error_when_passing_in_non_supported_sign_type
       assert_raises ArgumentError do
         WxCustoms::Sign.generate(@params, @key, "NON_SUPPORTED")
       end
