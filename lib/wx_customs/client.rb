@@ -6,9 +6,14 @@ module WxCustoms
   # A Ruby wrapper class for Weixin customs API
   class Client
     include HTTParty
-    base_uri "https://api.mch.weixin.qq.com/cgi-bin/mch"
+    BASE_URIS = {
+      production: "https://api.mch.weixin.qq.com/cgi-bin/mch",
+      test: "https://api.mch.weixin.qq.com/sandboxnew/cgi-bin/mch"
+    }.freeze
 
-    attr_accessor :appid, :mch_id, :api_key, :sign_type, :customs, :mch_customs_no
+    format :xml
+
+    attr_accessor :appid, :mch_id, :api_key, :sign_type, :customs, :mch_customs_no, :env
 
     # Initializes a new Client object
     #
@@ -21,6 +26,8 @@ module WxCustoms
       yield(self) if block_given?
 
       @sign_type ||= WxCustoms::Sign::SIGN_TYPE_MD5
+      @env ||= :test
+      @base_uri = BASE_URIS[@env.to_sym]
     end
 
     # Custom declare query API
@@ -28,10 +35,13 @@ module WxCustoms
     # @see https://pay.weixin.qq.com/wiki/doc/api/external/declarecustom.php?chapter=18_1
     # @params params [Hash]
     # @return [HTTParty::Response]
-    def custom_declare_order(params)
+    def custom_declare_order!(params)
       body = merchant_params.merge(params)
 
-      invoke_remote("/customs/customdeclareorder", body)
+      resp = invoke_remote("/customs/customdeclareorder", body)
+      raise WxCustoms::Error, resp["xml"]["retmsg"] if resp["xml"]["return_code"] == "FAIL"
+
+      resp
     end
 
     # Custom declare order API
@@ -39,10 +49,13 @@ module WxCustoms
     # @see https://pay.weixin.qq.com/wiki/doc/api/external/declarecustom.php?chapter=18_2
     # @params params [Hash]
     # @return [HTTParty::Response]
-    def custom_declare_query(params)
+    def custom_declare_query!(params)
       body = merchant_params.merge(sign_type: sign_type).merge(params)
 
-      invoke_remote("/customs/customdeclarequery", body)
+      resp = invoke_remote("/customs/customdeclarequery", body)
+      raise WxCustoms::Error, resp["xml"]["retmsg"] if resp["xml"]["return_code"] == "FAIL"
+
+      resp
     end
 
     # Custom declare redeclare API
@@ -50,10 +63,13 @@ module WxCustoms
     # @see https://pay.weixin.qq.com/wiki/doc/api/external/declarecustom.php?chapter=18_4&index=3
     # @params params [Hash]
     # @return [HTTParty::Response]
-    def custom_declare_redeclare(params)
+    def custom_declare_redeclare!(params)
       body = merchant_params.merge(params)
 
-      invoke_remote("/newcustoms/customdeclareredeclare", body)
+      resp = invoke_remote("/newcustoms/customdeclareredeclare", body)
+      raise WxCustoms::Error, resp["xml"]["retmsg"] if resp["xml"]["return_code"] == "FAIL"
+
+      resp
     end
 
     private
@@ -70,7 +86,7 @@ module WxCustoms
     def invoke_remote(url, body, options = { headers: {} })
       headers = { "Content-Type" => "application/xml" }.merge(options[:headers])
 
-      self.class.post(url, headers: headers, body: xmlify_payload(body))
+      self.class.post(@base_uri + url, headers: headers, body: xmlify_payload(body))
     end
 
     def xmlify_payload(body)
