@@ -31,5 +31,12 @@ module WxCustoms
         raise ArgumentError, "non-supported signature type: #{sign_type}"
       end
     end
+
+    def self.verify?(params, api_key, options = {})
+      tmp_params = params.dup
+      sign = tmp_params.delete("sign") || params.delete(:sign)
+
+      generate(tmp_params, api_key, options[:sign_type] || SIGN_TYPE_MD5) == sign
+    end
   end
 end
