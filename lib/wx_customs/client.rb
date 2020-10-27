@@ -6,14 +6,14 @@ module WxCustoms
   # A Ruby wrapper class for Weixin customs API
   class Client
     include HTTParty
-    BASE_URIS = {
-      production: "https://api.mch.weixin.qq.com/cgi-bin/mch",
-      test: "https://api.mch.weixin.qq.com/sandboxnew/cgi-bin/mch"
-    }.freeze
+
+    RETURN_CODE_FAIL = "FAIL"
+
+    base_uri "https://api.mch.weixin.qq.com/cgi-bin/mch"
 
     format :xml
 
-    attr_accessor :appid, :mch_id, :api_key, :sign_type, :customs, :mch_customs_no, :env
+    attr_accessor :appid, :mch_id, :api_key, :sign_type, :customs, :mch_customs_no
 
     # Initializes a new Client object
     #
@@ -26,8 +26,6 @@ module WxCustoms
       yield(self) if block_given?
 
       @sign_type ||= WxCustoms::Sign::SIGN_TYPE_MD5
-      @env ||= :test
-      @base_uri = BASE_URIS[@env.to_sym]
     end
 
     # Custom declare query API
@@ -39,7 +37,7 @@ module WxCustoms
       body = merchant_params.merge(params)
 
       resp = invoke_remote("/customs/customdeclareorder", body)
-      raise WxCustoms::Error, resp["xml"]["retmsg"] if resp["xml"]["return_code"] == "FAIL"
+      raise WxCustoms::Error, resp["xml"]["return_msg"] if resp["xml"]["return_code"] == RETURN_CODE_FAIL
 
       resp
     end
@@ -53,7 +51,7 @@ module WxCustoms
       body = merchant_params.merge(sign_type: sign_type).merge(params)
 
       resp = invoke_remote("/customs/customdeclarequery", body)
-      raise WxCustoms::Error, resp["xml"]["retmsg"] if resp["xml"]["return_code"] == "FAIL"
+      raise WxCustoms::Error, resp["xml"]["return_msg"] if resp["xml"]["return_code"] == RETURN_CODE_FAIL
 
       resp
     end
@@ -67,7 +65,7 @@ module WxCustoms
       body = merchant_params.merge(params)
 
       resp = invoke_remote("/newcustoms/customdeclareredeclare", body)
-      raise WxCustoms::Error, resp["xml"]["retmsg"] if resp["xml"]["return_code"] == "FAIL"
+      raise WxCustoms::Error, resp["xml"]["return_msg"] if resp["xml"]["return_code"] == RETURN_CODE_FAIL
 
       resp
     end
@@ -86,7 +84,7 @@ module WxCustoms
     def invoke_remote(url, body, options = { headers: {} })
       headers = { "Content-Type" => "application/xml" }.merge(options[:headers])
 
-      self.class.post(@base_uri + url, headers: headers, body: xmlify_payload(body))
+      self.class.post(url, headers: headers, body: xmlify_payload(body))
     end
 
     def xmlify_payload(body)

@@ -56,10 +56,10 @@ params = {
   sub_order_no: "15112496832609001"
 }
 
-response = $client.custom_declare_order params
+response = $client.custom_declare_order! params
 
 # You can also config another `customs` and `mch_customs_no` in an API call
-$client.custom_declare_order { customs: "ANOTHER_CUSTOMS", mch_customs_no: "ANOTHER_MCH_CUSTOMS_NO" }.merge(params)
+$client.custom_declare_order! { customs: "ANOTHER_CUSTOMS", mch_customs_no: "ANOTHER_MCH_CUSTOMS_NO" }.merge(params)
 ```
 
 ### Custom Declare Query API
@@ -71,7 +71,7 @@ params = {
   transaction_id: "1006930610201511241751403478"
 }
 
-response = $client.custom_declare_query params
+response = $client.custom_declare_query! params
 ```
 
 ### Custom Declare Redeclare API
@@ -83,7 +83,7 @@ params = {
   out_trade_no: "15112496832609"
 }
 
-response = $client.custom_declare_redeclare params
+response = $client.custom_declare_redeclare! params
 ```
 
 ## Development
