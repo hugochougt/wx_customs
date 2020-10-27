@@ -8,7 +8,7 @@ gemspec
 group :development, :test do
   # A make-like build utility for Ruby.
   # https://github.com/ruby/rake
-  gem "rake", "~> 12.0"
+  gem "rake", "~> 12.3"
 
   # minitest provides a complete suite of testing facilities supporting TDD, BDD, mocking, and benchmarking.
   # https://github.com/seattlerb/minitest

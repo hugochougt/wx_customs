@@ -34,7 +34,7 @@ GEM
       pry (~> 0.13.0)
     public_suffix (4.0.6)
     rainbow (3.0.0)
-    rake (12.0.0)
+    rake (12.3.3)
     regexp_parser (1.8.1)
     rexml (3.2.4)
     rubocop (0.92.0)
@@ -61,7 +61,7 @@ PLATFORMS
 DEPENDENCIES
   minitest (~> 5.0)
   pry-byebug (~> 3.9)
-  rake (~> 12.0)
+  rake (~> 12.3)
   rubocop (~> 0.92.0)
   webmock (~> 3.9, >= 3.9.1)
   wx_customs!
