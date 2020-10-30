@@ -50,14 +50,13 @@ module WxCustoms
       }
 
       response = @client.custom_declare_order! params
-      result_data = response["xml"]
 
-      assert_equal "SUCCESS", result_data["result_code"]
-      assert WxCustoms::Sign.verify?(result_data, @merchant_api_key)
-      assert_equal @appid, result_data["appid"]
-      assert_equal @merchant_id, result_data["mch_id"]
-      assert_equal @out_trade_no, result_data["out_trade_no"]
-      assert_equal "SUBMITTED", result_data["state"]
+      assert_equal "SUCCESS", response["result_code"]
+      assert WxCustoms::Sign.verify?(response, @merchant_api_key)
+      assert_equal @appid, response["appid"]
+      assert_equal @merchant_id, response["mch_id"]
+      assert_equal @out_trade_no, response["out_trade_no"]
+      assert_equal "SUBMITTED", response["state"]
     end
 
     def test_fail_to_custom_declare_order
@@ -117,16 +116,45 @@ module WxCustoms
       }
 
       response = @client.custom_declare_query! params
-      result_data = response["xml"]
 
-      assert_equal "SUCCESS", result_data["result_code"]
-      assert WxCustoms::Sign.verify?(result_data, @merchant_api_key)
-      assert_equal @appid, result_data["appid"]
-      assert_equal @merchant_id, result_data["mch_id"]
-      result_data["count"].to_i.times do |n|
-        assert_equal "SUCCESS", result_data["state_#{n}"]
-        assert_equal "SAME", result_data["cert_check_result_#{n}"]
+      assert_equal "SUCCESS", response["result_code"]
+      assert WxCustoms::Sign.verify?(response, @merchant_api_key)
+      assert_equal @appid, response["appid"]
+      assert_equal @merchant_id, response["mch_id"]
+      response["count"].to_i.times do |n|
+        assert_equal "SUCCESS", response["state_#{n}"]
+        assert_equal "SAME", response["cert_check_result_#{n}"]
       end
+    end
+
+    def test_fail_to_custom_declare_query
+      fail_response = <<~XML
+        <xml>
+          <return_code><![CDATA[SUCCESS]]></return_code>
+          <return_msg><![CDATA[成功]]></return_msg>
+          <sign_type><![CDATA[MD5]]></sign_type>
+          <sign><![CDATA[6CA27A3A4DCFB4A72D95553A2E2724B0]]></sign>
+          <appid><![CDATA[wxd678efh567hg6787]]></appid>
+          <mch_id><![CDATA[1230000109]]></mch_id>
+          <result_code><![CDATA[FAIL]]></result_code>
+          <err_code><![CDATA[ORDER_NEED_DECLARE]]></err_code>
+          <err_code_des><![CDATA[该订单没有申报]]></err_code_des>
+        </xml>
+      XML
+
+      stub_request(:post, /api.mch.weixin.qq.com/i).
+        to_return(body: fail_response)
+
+      params = {
+        out_trade_no: @out_trade_no,
+        customs: @customs,
+        mch_customs_no: @merchant_customs_no
+      }
+
+      exception = assert_raises WxCustoms::Error do
+        @client.custom_declare_order! params
+      end
+      assert_equal "ORDER_NEED_DECLARE: 该订单没有申报", exception.message
     end
 
     def test_custom_declare_redeclare_successfully
@@ -158,14 +186,13 @@ module WxCustoms
       }
 
       response = @client.custom_declare_redeclare! params
-      result_data = response["xml"]
 
-      assert_equal "SUCCESS", result_data["result_code"]
-      assert WxCustoms::Sign.verify?(result_data, @merchant_api_key)
-      assert_equal @appid, result_data["appid"]
-      assert_equal @merchant_id, result_data["mch_id"]
-      assert_equal @out_trade_no, result_data["out_trade_no"]
-      assert_equal @transaction_id, result_data["transaction_id"]
+      assert_equal "SUCCESS", response["result_code"]
+      assert WxCustoms::Sign.verify?(response, @merchant_api_key)
+      assert_equal @appid, response["appid"]
+      assert_equal @merchant_id, response["mch_id"]
+      assert_equal @out_trade_no, response["out_trade_no"]
+      assert_equal @transaction_id, response["transaction_id"]
     end
   end
 end
