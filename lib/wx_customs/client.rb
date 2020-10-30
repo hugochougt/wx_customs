@@ -36,8 +36,9 @@ module WxCustoms
     def custom_declare_order!(params)
       body = merchant_params.merge(params)
 
-      resp = invoke_remote("/customs/customdeclareorder", body)
-      raise WxCustoms::Error, resp["xml"]["return_msg"] if resp["xml"]["return_code"] == RETURN_CODE_FAIL
+      resp = invoke_remote("/customs/customdeclareorder", body)["xml"]
+      raise WxCustoms::Error, resp["return_msg"] if resp["return_code"] == RETURN_CODE_FAIL
+      raise WxCustoms::Error, [resp["err_code"], resp["err_code_des"]].join(": ") if resp["result_code"] == RETURN_CODE_FAIL
 
       resp
     end
@@ -50,8 +51,9 @@ module WxCustoms
     def custom_declare_query!(params)
       body = merchant_params.merge(sign_type: sign_type).merge(params)
 
-      resp = invoke_remote("/customs/customdeclarequery", body)
-      raise WxCustoms::Error, resp["xml"]["return_msg"] if resp["xml"]["return_code"] == RETURN_CODE_FAIL
+      resp = invoke_remote("/customs/customdeclarequery", body)["xml"]
+      raise WxCustoms::Error, resp["return_msg"] if resp["return_code"] == RETURN_CODE_FAIL
+      raise WxCustoms::Error, [resp["err_code"], resp["err_code_des"]].join(": ") if resp["result_code"] == RETURN_CODE_FAIL
 
       resp
     end
@@ -64,8 +66,9 @@ module WxCustoms
     def custom_declare_redeclare!(params)
       body = merchant_params.merge(params)
 
-      resp = invoke_remote("/newcustoms/customdeclareredeclare", body)
-      raise WxCustoms::Error, resp["xml"]["return_msg"] if resp["xml"]["return_code"] == RETURN_CODE_FAIL
+      resp = invoke_remote("/newcustoms/customdeclareredeclare", body)["xml"]
+      raise WxCustoms::Error, resp["return_msg"] if resp["return_code"] == RETURN_CODE_FAIL
+      raise WxCustoms::Error, [resp["err_code"], resp["err_code_des"]].join(": ") if resp["result_code"] == RETURN_CODE_FAIL
 
       resp
     end
