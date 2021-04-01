@@ -4,9 +4,9 @@ AllCops:
     - 'tmp/**/*'
     - '.git/**/*'
     - 'bin/*'
+    - 'vendor/bundle/**/*'
   DisplayCopNames: true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.4
 
 Metrics:
   Enabled: false
