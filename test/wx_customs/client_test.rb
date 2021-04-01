@@ -39,8 +39,8 @@ module WxCustoms
         </xml>
       XML
 
-      stub_request(:post, /api.mch.weixin.qq.com/i).
-        to_return(body: success_response)
+      stub_request(:post, /api.mch.weixin.qq.com/i)
+        .to_return(body: success_response)
 
       params = {
         out_trade_no: @out_trade_no,
@@ -67,8 +67,8 @@ module WxCustoms
         </xml>
       XML
 
-      stub_request(:post, /api.mch.weixin.qq.com/i).
-        to_return(body: fail_response)
+      stub_request(:post, /api.mch.weixin.qq.com/i)
+        .to_return(body: fail_response)
 
       params = {
         out_trade_no: @out_trade_no,
@@ -106,8 +106,8 @@ module WxCustoms
         </xml>
       XML
 
-      stub_request(:post, /api.mch.weixin.qq.com/i).
-        to_return(body: success_response)
+      stub_request(:post, /api.mch.weixin.qq.com/i)
+        .to_return(body: success_response)
 
       params = {
         out_trade_no: @out_trade_no,
@@ -142,8 +142,8 @@ module WxCustoms
         </xml>
       XML
 
-      stub_request(:post, /api.mch.weixin.qq.com/i).
-        to_return(body: fail_response)
+      stub_request(:post, /api.mch.weixin.qq.com/i)
+        .to_return(body: fail_response)
 
       params = {
         out_trade_no: @out_trade_no,
@@ -176,8 +176,8 @@ module WxCustoms
         </xml>
       XML
 
-      stub_request(:post, /api.mch.weixin.qq.com/i).
-        to_return(body: success_response)
+      stub_request(:post, /api.mch.weixin.qq.com/i)
+        .to_return(body: success_response)
 
       params = {
         out_trade_no: @out_trade_no,
